@@ -1,0 +1,15 @@
+# 编辑器 / IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+._*
+
+# Python
+__pycache__/
+*.pyc
+.venv*/
+
+# slides 截图临时文件
+slides/assets/check_*.png

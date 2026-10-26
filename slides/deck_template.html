@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>nano-vllm 深度解析</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --ink:#e6edf3; --dim:#8b98a8;
+    --accent:#4dd4c0; --accent2:#f2a65a; --bad:#e06c75; --line:#243040;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif}
+  #stage{position:relative;width:1280px;height:720px;overflow:hidden}
+  .slide{position:absolute;inset:0;padding:52px 72px 76px;display:none;
+    flex-direction:column;gap:18px;justify-content:center}
+  .slide.on{display:flex}
+  h1{font-size:52px;line-height:1.15;font-weight:700;letter-spacing:-.5px}
+  h2{font-size:34px;line-height:1.25;font-weight:650;color:var(--ink)}
+  h2 .n{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:14px;font-size:26px}
+  .sub{color:var(--dim);font-size:19px;line-height:1.5}
+  .kicker{color:var(--accent);font-size:17px;letter-spacing:2px;text-transform:uppercase}
+  ul{margin-left:22px;display:flex;flex-direction:column;gap:11px}
+  li{font-size:22px;line-height:1.45}
+  li b{color:var(--accent)}
+  li .warn{color:var(--bad)}
+  pre{background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;font-family:"SF Mono",Menlo,Consolas,monospace;
+    font-size:16.5px;line-height:1.5;color:#cfe3f5;overflow:hidden;white-space:pre}
+  pre.small{font-size:14.5px;line-height:1.45}
+  .hl{color:var(--accent)} .hl2{color:var(--accent2)} .bad{color:var(--bad)}
+  table{border-collapse:collapse;font-size:18px;width:100%}
+  th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left}
+  th{color:var(--dim);font-weight:600;font-size:15px;letter-spacing:.5px}
+  td.num{font-variant-numeric:tabular-nums;text-align:right}
+  .row{display:flex;gap:28px;flex:1;min-height:0}
+  .col{flex:1;display:flex;flex-direction:column;gap:14px;min-width:0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .card h3{font-size:18px;color:var(--accent);margin-bottom:8px}
+  .card p{font-size:17px;color:var(--dim);line-height:1.5}
+  .big{font-size:64px;font-weight:750;color:var(--accent);font-variant-numeric:tabular-nums}
+  .meter{display:flex;gap:6px;align-items:flex-end;height:64px}
+  .meter i{display:block;width:26px;background:var(--accent);border-radius:3px 3px 0 0;opacity:.85}
+  footer{position:absolute;left:72px;right:72px;bottom:22px;display:flex;
+    justify-content:space-between;color:#4a5766;font-size:13px;
+    border-top:1px solid var(--line);padding-top:10px}
+  #hud{position:fixed;right:16px;bottom:12px;color:#3d4a59;font-size:12px}
+  @media print{
+    @page{size:1280px 720px;margin:0}
+    html,body{height:auto;background:var(--bg)}
+    #stage{width:1280px;height:auto;overflow:visible}
+    .slide{display:flex!important;position:relative;inset:auto;page-break-after:always;
+      break-after:page;height:720px;width:1280px}
+    footer{position:absolute}
+    #hud{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+<!--SLIDES-->
+</div>
+<div id="hud"></div>
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.replace('#/',''))||1)-1));
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    document.getElementById('hud').textContent=(i+1)+' / '+slides.length;
+    history.replaceState(null,'','#/'+(i+1));
+  }
+  addEventListener('keydown',e=>{
+    if(['ArrowRight',' ','PageDown','j'].includes(e.key)){show(i+1);e.preventDefault()}
+    if(['ArrowLeft','PageUp','k'].includes(e.key)){show(i-1);e.preventDefault()}
+    if(e.key==='Home'){show(0)} if(e.key==='End'){show(slides.length-1)}
+    if(e.key==='f'||e.key==='F'){document.documentElement.requestFullscreen?.()}
+    if(e.key==='p'||e.key==='P'){print()}
+  });
+  addEventListener('hashchange',()=>show((parseInt(location.hash.replace('#/',''))||1)-1));
+  show(i);
+</script>
+</body>
+</html>
